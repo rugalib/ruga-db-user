@@ -1,8 +1,9 @@
 <?php
+
 /** @noinspection PhpUnnecessaryFullyQualifiedNameInspection */
 declare(strict_types=1);
 
-namespace Ruga\Skeleton\Test\PHPUnit;
+namespace Ruga\User\Test\PHPUnit;
 
 use Laminas\ServiceManager\ServiceManager;
 use Laminas\ConfigAggregator\ConfigAggregator;
@@ -15,33 +16,12 @@ use PHPUnit\Framework\TestCase;
  *
  * @author   Roland Rusch, easy-smart solution GmbH <roland.rusch@easy-smart.ch>
  */
-abstract class AbstractTestSetUp extends TestCase
+abstract class AbstractTestSetUp extends \Ruga\Db\PHPUnit\AbstractTestSetUp
 {
-    private $config;
-    
-    /** @var ServiceManager */
-    private $container;
-    
-    
     
     protected function setUp(): void
     {
         parent::setUp();
-    }
-    
-    
-    
-    /**
-     * Return the cached config.
-     *
-     * @return array
-     */
-    protected function getConfig()
-    {
-        if (!$this->config) {
-            $this->config = $this->configProvider();
-        }
-        return $this->config;
     }
     
     
@@ -55,6 +35,8 @@ abstract class AbstractTestSetUp extends TestCase
     {
         $config = new ConfigAggregator(
             [
+                new \Ruga\Db\ConfigProvider(),
+                new \Ruga\User\ConfigProvider(),
                 new PhpFileProvider(__DIR__ . "/../../config/config.php"),
                 new PhpFileProvider(__DIR__ . "/../../config/config.local.php"),
             ], null, []
@@ -63,19 +45,4 @@ abstract class AbstractTestSetUp extends TestCase
     }
     
     
-    
-    /**
-     * Create and return the service manager.
-     *
-     * @return ServiceManager
-     */
-    public function getContainer(): ServiceManager
-    {
-        if (!$this->container) {
-            $dependencies = $this->getConfig()['dependencies'];
-            $dependencies['services']['config'] = $this->getConfig();
-            $this->container = new ServiceManager($dependencies);
-        }
-        return $this->container;
-    }
 }

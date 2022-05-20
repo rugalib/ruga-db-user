@@ -14,7 +14,7 @@ return <<<"SQL"
 SET FOREIGN_KEY_CHECKS = 0;
 CREATE TABLE `{$user}` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `username` VARCHAR(255) NOT NULL,
+  `username` VARCHAR(100) NOT NULL,
   `password` VARCHAR(255) NULL DEFAULT NULL,
   `fullname` VARCHAR(255) NULL,
   `email` VARCHAR(255) NULL DEFAULT NULL,

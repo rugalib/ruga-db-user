@@ -15,7 +15,7 @@ return <<<"SQL"
 SET FOREIGN_KEY_CHECKS = 0;
 CREATE TABLE `{$role}` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(255) NULL,
+  `name` VARCHAR(100) NULL,
   `remark` TEXT NULL,
   `created` DATETIME NOT NULL,
   `createdBy` INT NOT NULL,

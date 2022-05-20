@@ -14,9 +14,9 @@ $userhasrole = $resolver->getTableName(\Ruga\User\Link\Role\UserHasRoleTable::cl
 return <<<"SQL"
 
 SET FOREIGN_KEY_CHECKS = 0;
-INSERT INTO `{$userhasrole}` (`{$user}_id`, `{$role}_id`, `created`, `createdBy`, `changed`, `changedBy`) VALUES (1, 1, '2020-01-01 00:00:00', 1, '2020-01-01 00:00:00', 1);
-INSERT INTO `{$userhasrole}` (`{$user}_id`, `{$role}_id`, `created`, `createdBy`, `changed`, `changedBy`) VALUES (2, 2, '2020-01-01 00:00:00', 1, '2020-01-01 00:00:00', 1);
-INSERT INTO `{$userhasrole}` (`{$user}_id`, `{$role}_id`, `created`, `createdBy`, `changed`, `changedBy`) VALUES (3, 3, '2020-01-01 00:00:00', 1, '2020-01-01 00:00:00', 1);
+INSERT INTO `{$userhasrole}` (`{$user}_id`, `{$role}_id`, `created`, `createdBy`, `changed`, `changedBy`) VALUES (1, 1, NOW(), 1, NOW(), 1);
+INSERT INTO `{$userhasrole}` (`{$user}_id`, `{$role}_id`, `created`, `createdBy`, `changed`, `changedBy`) VALUES (2, 2, NOW(), 1, NOW(), 1);
+INSERT INTO `{$userhasrole}` (`{$user}_id`, `{$role}_id`, `created`, `createdBy`, `changed`, `changedBy`) VALUES (3, 3, NOW(), 1, NOW(), 1);
 SET FOREIGN_KEY_CHECKS = 1;
 
 SQL;
