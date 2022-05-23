@@ -25,9 +25,10 @@ CREATE TABLE `{$user}` (
   `changed` DATETIME NOT NULL,
   `changedBy` INT NOT NULL,
   PRIMARY KEY (`id`),
+  UNIQUE INDEX `{$user}_username_idx` (`username` ASC),
+  INDEX `{$user}_fullname_idx` (`fullname`),
   INDEX `fk_{$user}_changedBy_idx` (`changedBy` ASC),
   INDEX `fk_{$user}_createdBy_idx` (`createdBy` ASC),
-  UNIQUE INDEX `username_UNIQUE` (`username` ASC),
   CONSTRAINT `fk_{$user}_changedBy` FOREIGN KEY (`changedBy`) REFERENCES `{$user}` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `fk_{$user}_createdBy` FOREIGN KEY (`createdBy`) REFERENCES `{$user}` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 )

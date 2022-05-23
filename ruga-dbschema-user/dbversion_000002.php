@@ -24,7 +24,7 @@ CREATE TABLE `{$role}` (
   PRIMARY KEY (`id`),
   INDEX `fk_{$role}_changedBy_idx` (`changedBy` ASC),
   INDEX `fk_{$role}_createdBy_idx` (`createdBy` ASC),
-  UNIQUE INDEX `name_UNIQUE` (`name` ASC),
+  UNIQUE INDEX `{$role}_name_UNIQUE` (`name` ASC),
   CONSTRAINT `fk_{$role}_changedBy` FOREIGN KEY (`changedBy`) REFERENCES `{$user}` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `fk_{$role}_createdBy` FOREIGN KEY (`createdBy`) REFERENCES `{$user}` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 )
