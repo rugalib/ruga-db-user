@@ -4,7 +4,7 @@
 return [
     'db' => [
         'host' => '127.0.0.1',
-        'database' => 'rrlibtest',
+        'database' => 'rugadbtest',
         'username' => '',
         'password' => '',
     ],
