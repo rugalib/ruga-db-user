@@ -312,9 +312,30 @@ abstract class AbstractUser extends AbstractRugaRow implements UserInterface
      */
     public function isLoginDisabled(): bool
     {
-        return $this->isDisabled() || $this->password === null;
+        return $this->isDisabled() || ($this->password === null);
     }
     
+    
+    
+    /**
+     * Returns true, if login is enabled.
+     * @return bool
+     */
+    public function isLoginEnabled(): bool
+    {
+        return !$this->isLoginDisabled();
+    }
+    
+    
+    
+    /**
+     * Disables login for the account. Login can be reenabled by setting a password.
+     * @return void
+     */
+    public function disableLogin()
+    {
+        $this->password=null;
+    }
     
     
     /**
@@ -330,6 +351,16 @@ abstract class AbstractUser extends AbstractRugaRow implements UserInterface
     
     
     /**
+     * Disable user account. Account can be reenabled by setting a password or calling disableLogin().
+     * @return void
+     */
+    public function disable()
+    {
+        $this->password='*';
+    }
+    
+    
+    /**
      * Returns true, if user is marked as deleted.
      *
      * @return bool
@@ -342,13 +373,23 @@ abstract class AbstractUser extends AbstractRugaRow implements UserInterface
     
     
     /**
+     * Marks the user as deleted.
+     * @return void
+     */
+    public function markDeleted()
+    {
+        $this->password='-';
+    }
+    
+    
+    /**
      * Returns true, if user account is created but not yet verified.
      *
      * @return bool
      */
     public function isUnverified(): bool
     {
-        return $this->password[0] === '+';
+        return is_string($this->password) && ($this->password[0] == '+');
     }
     
     
