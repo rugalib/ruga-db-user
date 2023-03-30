@@ -14,7 +14,7 @@ use Ruga\Db\Row\RowAttributesInterface;
  *
  * @property int    $id                         Primary Key
  * @property string $username                   Username
- * @property string $password                   Password hash (null: login disabled, *: user disabled, -: user deleted, +<id>: email verification)
+ * @property string $password                   Password hash (null: login disabled, *: user disabled, -: user deleted, +<verification_code>: email verification)
  * @property string $fullname                   Full name / display name
  * @property string $email                      Email
  * @property string $mobile                     Mobile number

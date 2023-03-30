@@ -7,6 +7,7 @@ namespace Ruga\User;
 use Laminas\Db\ResultSet\ResultSetInterface;
 use Ruga\Db\Row\AbstractRugaRow;
 use Ruga\Db\Row\Feature\FullnameFeatureRowInterface;
+use Ruga\User\Exception\AccountIsNotUnverifiedException;
 use Ruga\User\Link\Role\UserHasRole;
 use Ruga\User\Link\Role\UserHasRoleInterface;
 use Ruga\User\Link\Role\UserHasRoleTable;
@@ -300,6 +301,120 @@ abstract class AbstractUser extends AbstractRugaRow implements UserInterface
                 $this->roles = array_diff($this->getRoles(), [$role->uniqueid]);
             }
         }
+    }
+    
+    
+    
+    /**
+     * Returns true, if user account does not allow login.
+     *
+     * @return bool
+     */
+    public function isLoginDisabled(): bool
+    {
+        return $this->isDisabled() || $this->password === null;
+    }
+    
+    
+    
+    /**
+     * Returns true, if user account is disabled.
+     *
+     * @return bool
+     */
+    public function isDisabled(): bool
+    {
+        return parent::isDisabled() || $this->isUnverified() || $this->isDeleted() || $this->password === '*';
+    }
+    
+    
+    
+    /**
+     * Returns true, if user is marked as deleted.
+     *
+     * @return bool
+     */
+    public function isDeleted(): bool
+    {
+        return $this->password === '-';
+    }
+    
+    
+    
+    /**
+     * Returns true, if user account is created but not yet verified.
+     *
+     * @return bool
+     */
+    public function isUnverified(): bool
+    {
+        return $this->password[0] === '+';
+    }
+    
+    
+    
+    /**
+     * Create a random verification code.
+     *
+     * @return string
+     * @throws \Exception
+     */
+    public function createVerificationCode(): string
+    {
+        return substr(str_replace(['+', '/', '0', 'O', 'I', 'l'], '', base64_encode(random_bytes(16))), 0, 12);
+    }
+    
+    
+    
+    /**
+     * Set the given verification code. If no code is given, a new random code is created.
+     *
+     * @param string|null $verificationCode
+     *
+     * @return void
+     * @throws \Exception
+     */
+    public function setVerificationCode(?string $verificationCode = null)
+    {
+        if ($verificationCode === null) {
+            $verificationCode = $this->createVerificationCode();
+        }
+        $this->password = "+{$verificationCode}";
+    }
+    
+    
+    
+    /**
+     * Returns the stored verification code.
+     *
+     * @return string
+     * @throws \Exception
+     */
+    public function getVerificationCode(): string
+    {
+        if (!$this->isUnverified()) {
+            throw new AccountIsNotUnverifiedException();
+        }
+        return substr($this->password, 1);
+    }
+    
+    
+    
+    /**
+     * Check, if $verificationCode matches and clear the password field if ok.
+     *
+     * @param string $verificationCode
+     *
+     * @return bool
+     * @throws \Exception
+     */
+    public function verifyAccount(string $verificationCode): bool
+    {
+        if ($verificationCode == $this->getVerificationCode()) {
+            $this->password = null;
+            return true;
+        }
+        return false;
     }
     
     
