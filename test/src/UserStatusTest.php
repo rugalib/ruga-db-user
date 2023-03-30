@@ -6,6 +6,7 @@ namespace Ruga\User\Test;
 
 use Laminas\ServiceManager\ServiceManager;
 use Ruga\User\Exception\AccountIsNotUnverifiedException;
+use Ruga\User\User;
 
 /**
  * @author Roland Rusch, easy-smart solution GmbH <roland.rusch@easy-smart.ch>
@@ -217,7 +218,32 @@ class UserStatusTest extends \Ruga\User\Test\PHPUnit\AbstractTestSetUp
         $this->expectException(AccountIsNotUnverifiedException::class);
         $user->verifyAccount($verificationCode);
         $user->save();
-        
     }
+    
+    
+    public function testCanFindAccountByVerificationCode(): void
+    {
+        $userTable = new \Ruga\User\UserTable($this->getAdapter());
+        /** @var \Ruga\User\User $user */
+        $user = $userTable->createRow();
+        $this->assertInstanceOf(\Ruga\User\User::class, $user);
+        $user->username = 'hans.mueller';
+        $verificationCode=$user->createVerificationCode();
+        $user->setVerificationCode($verificationCode);
+        $user->save();
+        
+        $this->assertTrue($user->isLoginDisabled());
+        $this->assertFalse($user->isLoginEnabled());
+        $this->assertTrue($user->isDisabled());
+        $this->assertFalse($user->isDeleted());
+        $this->assertTrue($user->isUnverified());
+        
+        
+        /** @var User $user2 */
+        $user2=$userTable->findbyVerificationCode($verificationCode)->current();
+        $this->assertInstanceOf(\Ruga\User\User::class, $user2);
+        $this->assertEquals($user->uniqueid, $user2->uniqueid);
+    }
+    
     
 }

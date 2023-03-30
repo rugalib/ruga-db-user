@@ -21,4 +21,9 @@ abstract class AbstractUserTable extends AbstractRugaTable implements UserTableI
         return $this->selectWith($s);
     }
     
+    public function findbyVerificationCode(string $verificationCode): ResultSetInterface
+    {
+        $s = $this->sql->select()->where(['password' => "+{$verificationCode}"]);
+        return $this->selectWith($s);
+    }
 }
