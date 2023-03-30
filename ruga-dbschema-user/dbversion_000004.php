@@ -26,7 +26,7 @@ CREATE TABLE `{$userhasrole}` (
   INDEX `fk_{$userhasrole}_{$role}1_idx` (`{$role}_id` ASC),
   INDEX `fk_{$userhasrole}_changedBy_idx` (`changedBy` ASC),
   INDEX `fk_{$userhasrole}_createdBy_idx` (`createdBy` ASC),
-  CONSTRAINT `fk_{$userhasrole}_{$user}1` FOREIGN KEY (`{$user}_id`) REFERENCES `{$user}` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `fk_{$userhasrole}_{$user}1` FOREIGN KEY (`{$user}_id`) REFERENCES `{$user}` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
   CONSTRAINT `fk_{$userhasrole}_{$role}1` FOREIGN KEY (`{$role}_id`) REFERENCES `{$role}` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `fk_{$userhasrole}_changedBy` FOREIGN KEY (`changedBy`) REFERENCES `{$user}` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `fk_{$userhasrole}_createdBy` FOREIGN KEY (`createdBy`) REFERENCES `{$user}` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
