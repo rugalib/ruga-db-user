@@ -17,9 +17,9 @@ return <<<"SQL"
 
 SET FOREIGN_KEY_CHECKS = 0;
 INSERT INTO `{$user}` (`id`, `username`, `password`, `fullname`, `email`, `mobile`, `created`, `createdBy`, `changed`, `changedBy`) VALUES
- ('1', 'SYSTEM', null, 'SYSTEM', null, null, NOW(), '1', NOW(), '1')
-,('2', 'GUEST', null, 'GUEST', null, null, NOW(), '1', NOW(), '1')
-,('3', 'admin', '{$pwd('eZ.1234')}', null, null, 'admin', NOW(), '1', NOW(), '1')
+ ('1', 'SYSTEM', null,                     'SYSTEM', null, null, NOW(), '1', NOW(), '1')
+,('2', 'GUEST',  null,                     'GUEST',  null, null, NOW(), '1', NOW(), '1')
+,('3', 'admin',  '{$pwd('eZ.1234')}', 'admin',  null, null, NOW(), '1', NOW(), '1')
 ;
 SET FOREIGN_KEY_CHECKS = 1;
 
