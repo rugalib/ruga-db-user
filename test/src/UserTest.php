@@ -42,6 +42,24 @@ class UserTest extends \Ruga\User\Test\PHPUnit\AbstractTestSetUp
     }
     
     
+    public function testCanCheckRoles(): void
+    {
+        $userTable = new \Ruga\User\UserTable($this->getAdapter());
+        /** @var \Ruga\User\User $user */
+        $user = $userTable->findByIdentity('admin')->current();
+        $this->assertInstanceOf(\Ruga\User\User::class, $user);
+        $roles = $user->findRoles();
+        foreach ($roles as $role) {
+            $this->assertInstanceOf(\Ruga\User\Role\Role::class, $role);
+            echo $role->idname . PHP_EOL;
+        }
+        
+        $this->assertTrue($user->hasRole('admin'));
+        $this->assertTrue($user->hasRole('user'));
+        $this->assertFalse($user->hasRole('usr'));
+    }
+    
+    
     
     public function testCanCreateUser(): void
     {

@@ -11,7 +11,7 @@ use Laminas\ServiceManager\ServiceManager;
  */
 class RoleTableTest extends \Ruga\User\Test\PHPUnit\AbstractTestSetUp
 {
-    public function testCanFindRole(): void
+    public function testCanFindRoleByName(): void
     {
         $roleTable = new \Ruga\User\Role\RoleTable($this->getAdapter());
         /** @var \Ruga\User\Role\Role $role */
@@ -22,7 +22,7 @@ class RoleTableTest extends \Ruga\User\Test\PHPUnit\AbstractTestSetUp
     
     
     
-    public function testCanFindRoles(): void
+    public function testCanFindRolesByName(): void
     {
         $roleTable = new \Ruga\User\Role\RoleTable($this->getAdapter());
         /** @var \Ruga\User\Role\Role $role */
@@ -34,6 +34,26 @@ class RoleTableTest extends \Ruga\User\Test\PHPUnit\AbstractTestSetUp
         }
     }
     
+    
+    public function testCanFindRole(): void
+    {
+        $roleTable = new \Ruga\User\Role\RoleTable($this->getAdapter());
+        /** @var \Ruga\User\Role\Role $role */
+        $roles = $roleTable->find('user');
+        $this->assertCount(1, $roles);
+        foreach ($roles as $role) {
+            $this->assertInstanceOf(\Ruga\User\Role\RoleInterface::class, $role);
+            echo $role->idname . PHP_EOL;
+        }
+        
+        $roles = $roleTable->find('usr');
+        $this->assertCount(0, $roles);
+        foreach ($roles as $role) {
+            $this->assertInstanceOf(\Ruga\User\Role\RoleInterface::class, $role);
+            echo $role->idname . PHP_EOL;
+        }
+        
+    }
     
     
     public function testCreateRoleInheritanceConfig(): void

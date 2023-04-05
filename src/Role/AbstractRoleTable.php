@@ -46,7 +46,7 @@ abstract class AbstractRoleTable extends AbstractRugaTable implements RoleTableI
         } elseif (is_string($q) && (count($roles = $this->findById($q)) > 0)) {
             return $roles;
         }
-        return new ResultSet();
+        return $this->findById(null);
     }
     
     
