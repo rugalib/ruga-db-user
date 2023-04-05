@@ -11,6 +11,7 @@ use Ruga\User\Exception\AccountIsNotUnverifiedException;
 use Ruga\User\Link\Role\UserHasRole;
 use Ruga\User\Link\Role\UserHasRoleInterface;
 use Ruga\User\Link\Role\UserHasRoleTable;
+use Ruga\User\Role\RoleHasRoleInterface;
 use Ruga\User\Role\RoleInterface;
 use Ruga\User\Role\RoleTable;
 
@@ -23,7 +24,7 @@ use Ruga\User\Role\RoleTable;
 abstract class AbstractUser extends AbstractRugaRow implements UserInterface
 {
     /** @var array */
-    private $roles;
+    private ?array $roles=null;
     
     /** @var string The default hash algo used */
     const PASSWORD_HASH = PASSWORD_DEFAULT;
@@ -61,15 +62,14 @@ abstract class AbstractUser extends AbstractRugaRow implements UserInterface
             return parent::save();
         } finally {
             $rolesInDb = array_map(
-                function (RoleInterface $item) {
-                    // TODO: Change to uniqueid?
-                    return "{$item->id}@{$item->type}";
+                function (UserHasRoleInterface $item) {
+                    return "{$item->getRole()->uniqueid}";
                 },
-                iterator_to_array($this->findRoles())
+                iterator_to_array($this->findRoleLinks())
             );
             
-            $rolesToAdd = array_diff($this->roles ?? [], $rolesInDb);
-            $rolesToDel = array_diff($rolesInDb, $this->roles ?? []);
+            $rolesToAdd = is_array($this->roles) ? array_diff($this->roles, $rolesInDb) : [];
+            $rolesToDel = is_array($this->roles) ? array_diff($rolesInDb, $this->roles) : [];
             
             foreach ($rolesToAdd as $role_id) {
                 /** @var RoleInterface $role */
@@ -106,43 +106,35 @@ abstract class AbstractUser extends AbstractRugaRow implements UserInterface
     
     
     /**
-     * Returns the roles of the user.
+     * Returns the roles of the user as a ResultSet containing all ROLEs as RoleInterface instances.
+     * The ROLEs are searched recursively.
      *
      * @return ResultSetInterface
-     * @throws \ReflectionException
+     * @throws \ReflectionException|\Exception
      */
     public function findRoles(): ResultSetInterface
     {
-        $roleIds = array_map(
-            function (UserHasRoleInterface $item) {
-                return $item->Role_id;
-            },
-            iterator_to_array($this->findRoleLinks())
-        );
+        $roleIds=[];
+        /** @var UserHasRoleInterface $rolelink */
+        foreach($this->findRoleLinks() as $rolelink) {
+            $role=$rolelink->getRole();
+            /** @var RoleInterface $parentRole */
+            foreach($role->findChildrenRecursive() as $childRole) {
+                $roleIds[]=$childRole->uniqueid;
+            }
+            $roleIds[]=$role->uniqueid;
+        }
         
         return (new RoleTable($this->getTableGateway()->getAdapter()))->findById($roleIds);
-        /*
-        $roleTable = new RoleTable($this->getTableGateway()->getAdapter());
-        
-        $user_id = $this->PK;
-        $rs = $roleTable->select(
-            function (Select $select) use ($user_id) {
-                $select
-                    ->join(['ur' => UserHasRoleTable::TABLENAME], 'id=ur.Role_id', [])
-                    ->where(['ur.User_id' => $user_id]);
-            }
-        );
-        return $rs;
-        */
     }
     
     
     
     /**
-     * Returns the links to the roles of the user.
+     * Returns the links to the roles of the user. This only returns the directly linked
+     * roles.
      *
      * @return ResultSetInterface
-     * @throws \ReflectionException
      */
     private function findRoleLinks(): ResultSetInterface
     {

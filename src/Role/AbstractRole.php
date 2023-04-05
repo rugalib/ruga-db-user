@@ -5,12 +5,8 @@ declare(strict_types=1);
 namespace Ruga\User\Role;
 
 use Laminas\Db\Sql\Select;
-use Laminas\Db\Sql\Sql;
-use Laminas\Db\Sql\SqlInterface;
-use Laminas\Db\Sql\Where;
 use Ruga\Db\ResultSet\ResultSet;
 use Ruga\Db\Row\AbstractRugaRow;
-use Ruga\Db\Row\Feature\FullnameFeatureRowInterface;
 
 /**
  * Abstract user.
@@ -21,8 +17,8 @@ use Ruga\Db\Row\Feature\FullnameFeatureRowInterface;
 abstract class AbstractRole extends AbstractRugaRow implements RoleInterface
 {
     /**
-     * Returns the children of the role.
-     * A role inherits all the permissions from its children.
+     * Returns the children of the ROLE non-recursively.
+     * A ROLE inherits all the permissions from its children.
      *
      * @return ResultSet
      */
@@ -36,6 +32,33 @@ abstract class AbstractRole extends AbstractRugaRow implements RoleInterface
 
 //        \Ruga\Log::log_msg("SQL={$this->getTableGateway()->getSql()->buildSqlString($select)}");
         return $this->getTableGateway()->selectWith($select);
+    }
+    
+    
+    
+    /**
+     * Find all ROLEs recursively by iterating through all children.
+     *
+     * @param array|null $prevIds
+     *
+     * @return ResultSet
+     * @throws \Exception
+     */
+    public function findChildrenRecursive(array &$prevIds = null): ResultSet
+    {
+        $ids = $prevIds === null ? [] : $prevIds;
+        /** @var RoleInterface $child */
+        foreach ($this->findChildren() as $child) {
+            $ids[] = $child->uniqueid;
+            $child->findChildrenRecursive($ids);
+        }
+        
+        if ($prevIds === null) {
+            return $this->getTableGateway()->findById($ids);
+        }
+        
+        $prevIds = $ids;
+        return $this->getTableGateway()->findById(null);
     }
     
     
