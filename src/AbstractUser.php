@@ -234,7 +234,8 @@ abstract class AbstractUser extends AbstractRugaRow implements UserInterface
     {
         /** @var RoleInterface $role */
         if (!$role = (new RoleTable($this->getTableGateway()->getAdapter()))->find($roleQuery)->current()) {
-            throw new Exception\RoleNotFoundException("Role '{$roleQuery}' not found");
+            return false;
+//            throw new Exception\RoleNotFoundException("Role '{$roleQuery}' not found");
         }
         
         return in_array($role->uniqueid, $this->getRoles());
