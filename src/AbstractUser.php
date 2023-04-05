@@ -24,7 +24,7 @@ use Ruga\User\Role\RoleTable;
 abstract class AbstractUser extends AbstractRugaRow implements UserInterface
 {
     /** @var array */
-    private $roles;
+    private ?array $roles=null;
     
     /** @var string The default hash algo used */
     const PASSWORD_HASH = PASSWORD_DEFAULT;
@@ -62,15 +62,14 @@ abstract class AbstractUser extends AbstractRugaRow implements UserInterface
             return parent::save();
         } finally {
             $rolesInDb = array_map(
-                function (RoleInterface $item) {
-                    // TODO: Change to uniqueid?
-                    return "{$item->id}@{$item->type}";
+                function (UserHasRoleInterface $item) {
+                    return "{$item->getRole()->uniqueid}";
                 },
-                iterator_to_array($this->findRoles())
+                iterator_to_array($this->findRoleLinks())
             );
             
-            $rolesToAdd = array_diff($this->roles ?? [], $rolesInDb);
-            $rolesToDel = array_diff($rolesInDb, $this->roles ?? []);
+            $rolesToAdd = is_array($this->roles) ? array_diff($this->roles, $rolesInDb) : [];
+            $rolesToDel = is_array($this->roles) ? array_diff($rolesInDb, $this->roles) : [];
             
             foreach ($rolesToAdd as $role_id) {
                 /** @var RoleInterface $role */
